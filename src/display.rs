@@ -3,7 +3,7 @@ use std::char;
 use std::fmt::Display;
 
 use crate::config::{Spacing, StyleConfig};
-use crate::quote::Quote;
+use crate::quotes::Quote;
 use nu_ansi_term::{AnsiString, AnsiStrings, Style};
 use pad::{Alignment, PadStr};
 use textwrap::{wrap, Options};
@@ -57,7 +57,7 @@ impl OutputString {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct OutputStyles {
     pub border: Style,
     pub padding: Style,
@@ -177,7 +177,7 @@ impl Output {
     }
 
     fn layout_author(author: &String, style: &StyleConfig, content_len: Spacing) -> Vec<String> {
-        let author_with_prefix = style.author.prefix.clone() + &author;
+        let author_with_prefix = " ".repeat(style.author.indent) + &style.author.prefix + &author;
         let author_lines = wrap_text_to_width(author_with_prefix, content_len);
         if style.content_alignment == crate::config::Alignment::Center {
             let padded_lines: Vec<String> = author_lines

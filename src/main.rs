@@ -1,19 +1,25 @@
 use clap::{arg, builder::EnumValueParser, command, value_parser, Arg, ArgAction, Command};
 use config::{Config, StyleConfig};
 use display::Output;
-use quote::{Quote, QuotesFile, QUOTES_TOML};
-use rand::seq::SliceRandom;
+use quotes::{get_quote, Quote, QuoteFile, QuotesFile};
 use render::render;
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, path::PathBuf};
 use wrappers::Wrappers;
 mod config;
 mod display;
-mod quote;
+mod quotes;
 mod render;
 mod wrappers;
 
 fn main() {
     let matches = command!()
+        .arg(
+            Arg::new("fortune")
+                .short('f')
+                .long("fortune")
+                .action(ArgAction::SetTrue)
+                .help("Read installed fortunes from /usr/share/fortune"),
+        )
         .arg(
             Arg::new("center")
                 .short('c')
@@ -39,8 +45,8 @@ fn main() {
                 .value_parser(EnumValueParser::<Wrappers>::new()),
         )
         .arg(
-            Arg::new("no-color")
-                .long("no-color")
+            Arg::new("no-colors")
+                .long("no-colors")
                 .action(ArgAction::SetTrue)
                 .help("Disable color in the output"),
         )
@@ -53,15 +59,16 @@ fn main() {
         .get_matches();
 
     let no_attrs = matches.get_flag("no-attrs");
-    let no_colors = matches.get_flag("no-color");
+    let no_colors = matches.get_flag("no-colors");
     let center = matches.get_flag("center");
     let wrapper = matches.get_one::<Wrappers>("wrapper");
 
-    let quotes: QuotesFile = toml::from_str(QUOTES_TOML).unwrap();
-    let quote = quotes.quotes.choose(&mut rand::thread_rng()).unwrap();
-
+    let quote = quotes::fortune::FortuneFile::read(PathBuf::from("./art"))
+        .unwrap()
+        .get_quote()
+        .unwrap();
     let mut output = Output::new(!no_colors, !no_attrs, center);
-    output.make_output(quote, &StyleConfig::default());
+    output.make_output(&quote, &StyleConfig::default());
 
     if wrapper.is_some() {
         output = wrapper.unwrap().wrap(output, &StyleConfig::default())

@@ -64,7 +64,7 @@ impl Default for StyleConfig {
     fn default() -> Self {
         Self {
             name: String::from("default"),
-            body: Style::new().fg(Color::LightRed).bold(),
+            body: Style::new().bold().fg(Color::Red),
             author: AuthorStyle::default(),
             border: BorderStyle::default(),
             indent: 0,
