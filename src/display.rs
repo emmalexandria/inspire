@@ -2,8 +2,8 @@ use std::borrow::BorrowMut;
 use std::char;
 use std::fmt::Display;
 
+use crate::config::{Spacing, StyleConfig};
 use crate::quote::Quote;
-use crate::style::{Spacing, StyleConfig};
 use nu_ansi_term::{AnsiString, AnsiStrings, Style};
 use pad::{Alignment, PadStr};
 use textwrap::{wrap, Options};
@@ -92,7 +92,7 @@ impl Output {
         self.styles = Some(OutputStyles {
             author: style.author.style,
             content: style.body,
-            border: style.border_style.style,
+            border: style.border.style,
             padding: Style::default(),
             wrapper: Vec::new(),
         });
@@ -102,7 +102,7 @@ impl Output {
     }
 
     fn apply_border(&mut self, style: &StyleConfig) {
-        let chars = style.border_style.chars;
+        let chars = style.border.chars;
         self.output.iter_mut().for_each(|l| {
             l.bytes.insert(0, (chars.vertical, OutputCharType::Border));
             l.bytes.push((chars.vertical, OutputCharType::Border))
@@ -179,7 +179,7 @@ impl Output {
     fn layout_author(author: &String, style: &StyleConfig, content_len: Spacing) -> Vec<String> {
         let author_with_prefix = style.author.prefix.clone() + &author;
         let author_lines = wrap_text_to_width(author_with_prefix, content_len);
-        if style.content_alignment == crate::style::Alignment::Center {
+        if style.content_alignment == crate::config::Alignment::Center {
             let padded_lines: Vec<String> = author_lines
                 .iter()
                 .map(|l| l.pad_to_width_with_alignment(content_len, style.content_alignment.into()))

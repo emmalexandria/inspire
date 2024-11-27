@@ -1,0 +1,58 @@
+[[styles]]
+name = "default"
+indent = 0
+padding = [
+    4,
+    2,
+]
+content_width = 80
+content_alignment = "Left"
+
+[styles.body]
+foreground = "LightRed"
+is_bold = true
+is_dimmed = false
+is_italic = false
+is_underline = false
+is_blink = false
+is_reverse = false
+is_hidden = false
+is_strikethrough = false
+prefix_with_reset = false
+
+[styles.author]
+gap = 0
+indent = 4
+prefix = "—"
+
+[styles.author.style]
+is_bold = false
+is_dimmed = true
+is_italic = true
+is_underline = false
+is_blink = false
+is_reverse = false
+is_hidden = false
+is_strikethrough = false
+prefix_with_reset = false
+
+[styles.border_style.chars]
+vertical = "│"
+horizontal = "─"
+corners = [
+    "┌",
+    "┐",
+    "└",
+    "┘",
+]
+
+[styles.border_style.style]
+is_bold = false
+is_dimmed = false
+is_italic = false
+is_underline = false
+is_blink = false
+is_reverse = false
+is_hidden = false
+is_strikethrough = false
+prefix_with_reset = false

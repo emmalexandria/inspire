@@ -2,9 +2,11 @@ use serde::{Deserialize, Serialize};
 use std::{fs, io::Write, os};
 use toml::to_string;
 
+pub const QUOTES_TOML: &str = include_str!("../quotes.toml");
+
 #[derive(Serialize, Deserialize)]
 pub struct QuotesFile {
-    quotes: Vec<Quote>,
+    pub quotes: Vec<Quote>,
 }
 
 #[derive(Serialize, Deserialize)]

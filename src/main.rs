@@ -1,14 +1,15 @@
 use clap::{arg, builder::EnumValueParser, command, value_parser, Arg, ArgAction, Command};
+use config::{Config, StyleConfig};
 use display::Output;
-use quote::Quote;
+use quote::{Quote, QuotesFile, QUOTES_TOML};
+use rand::seq::SliceRandom;
 use render::render;
-use style::StyleConfig;
+use std::{fs::File, io::Write};
 use wrappers::Wrappers;
 mod config;
 mod display;
 mod quote;
 mod render;
-mod style;
 mod wrappers;
 
 fn main() {
@@ -24,14 +25,16 @@ fn main() {
             Arg::new("style")
                 .short('s')
                 .long("style")
-                .help("Set the style to use from the configuration file")
-                .required(false),
+                .help("Set the style to use from the config file")
+                .required(false)
+                .default_value("default")
+                .value_parser(value_parser!(String)),
         )
         .arg(
-            Arg::new("renderer")
-                .short('r')
-                .long("renderer")
-                .help("Set the output renderer")
+            Arg::new("wrapper")
+                .short('w')
+                .long("wrapper")
+                .help("Set the output wrapper")
                 .required(false)
                 .value_parser(EnumValueParser::<Wrappers>::new()),
         )
@@ -49,7 +52,20 @@ fn main() {
         )
         .get_matches();
 
-    let mut output = Output::new(true, true, false);
-    output.make_output(&Quote::new("Please pay attention very carefully, because this is the truest thing a stranger will ever say to you: In the face of such hopelessness as our eventual, unavoidable death, there is little sense in not at least TRYING to accomplish all your wildest dreams in life.".to_string(), "Kevin Smith".to_string()), &StyleConfig::default());
+    let no_attrs = matches.get_flag("no-attrs");
+    let no_colors = matches.get_flag("no-color");
+    let center = matches.get_flag("center");
+    let wrapper = matches.get_one::<Wrappers>("wrapper");
+
+    let quotes: QuotesFile = toml::from_str(QUOTES_TOML).unwrap();
+    let quote = quotes.quotes.choose(&mut rand::thread_rng()).unwrap();
+
+    let mut output = Output::new(!no_colors, !no_attrs, center);
+    output.make_output(quote, &StyleConfig::default());
+
+    if wrapper.is_some() {
+        output = wrapper.unwrap().wrap(output, &StyleConfig::default())
+    }
+
     render(output);
 }

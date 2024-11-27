@@ -9,6 +9,7 @@ edition = "2021"
 clap = { version = "4.5.21", features = ["cargo"] }
 nu-ansi-term = { version = "0.50.1", features = ["derive_serde_style"] }
 pad = "0.1.6"
+rand = "0.8.5"
 serde = { version = "1.0.215", features = ["derive"] }
 terminal_size = "0.4.0"
 textwrap = { version = "0.16.1", features = ["smawk"] }
